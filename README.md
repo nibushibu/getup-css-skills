@@ -29,10 +29,10 @@ skills/
 
 ```sh
 # Zed・Codex など（.agents/skills/）と Claude Code（.claude/skills/）に入れる
-npx skills add nibushibu/getup-css-skills --skill getup-css -a zed -a claude-code --copy -y
+npx skills add nibushibu/getup-css-skills --skill getup-css -a zed -a claude-code -y
 ```
 
-- `--copy` を付けると、各ツールのフォルダーに実体がコピーされる。付けない場合は、`.agents/skills/` の実体へのシンボリックリンクになる。
+- 実体は `.agents/skills/getup-css/` に置かれ、`.claude/skills/getup-css` はそこへの相対パスのシンボリックリンクになる。
 - インストールした内容と取得元は `skills-lock.json` に記録される。これもコミットしておく。
 - 更新は `npx skills update getup-css`、削除は `npx skills remove getup-css`。
 - インストールしたファイルはプロジェクトにコミットする。ほかの人や別のマシンでも同じルールが効く。
