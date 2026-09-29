@@ -1,0 +1,62 @@
+/*
+ * デザイントークン（`@layer tokens`）の骨組み。値はすべて仮。
+ *
+ * ## 何をトークンにするか
+ *
+ * 次のどれかに当てはまる値だけを置く。
+ *
+ * - ブランドとして決める値（1 か所を変えれば、全体が追従してほしいもの）
+ * - デザインシステムの芯として、ほかのサイトへ持ち出す値
+ * - ファイルをまたいで、互いの関係を保つ必要がある値（重なり順など）
+ *
+ * 派生する値はトークンにしない。スタイル側で `calc()` や相対色構文を使って作る。
+ *
+ *   padding: calc(var(--space) * 1.5);
+ *   background: oklch(from var(--color-foreground) l c h / 8%);
+ *
+ * 文字サイズはトークンにせず、`rem` / `em` で直接書く。
+ * ある部品の中だけで使う値は、ここではなく、その部品で `--_` 付きの変数として持つ。
+ * ブレークポイントは `@media` の条件に `var()` を書けないので、トークンにできない。
+ */
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    /* 色：基準色 */
+    --color-black: #111;
+    --color-white: #fff;
+
+    /*
+     * 色：役割。
+     * どの基準色をどの役割に使うかを、ここで 1 回だけ決める。
+     * ダークモードやほかのサイトへの展開では、この対応づけを差し替える。
+     */
+    --color-foreground: var(--color-black);
+    --color-background: var(--color-white);
+    --color-accent: var(--color-black);
+
+    /*
+     * 色：派生させた役割。
+     * 何度も使う派生の色だけを、役割としてここで派生させる。
+     *
+     * 注意：`:root` で計算した値が継承されるため、ページの一部で
+     * `--color-foreground` だけを差し替えても、この 2 つは追従しない。
+     * その場合は、同じ要素でこの 2 つも定義し直す。
+     */
+    --color-border: oklch(from var(--color-foreground) l c h / 12%);
+    --color-muted: oklch(from var(--color-foreground) l c h / 70%);
+
+    /* 書体 */
+    --font-sans: system-ui, sans-serif;
+
+    /* 余白の基準。スタイル側で `calc(var(--space) * n)` として使う */
+    --space: 1rem;
+
+    /*
+     * 重なり順（z-index）。
+     * 値を部品に直接書かず、ここに並べて全体の前後関係を見渡せるようにする。
+     * あとから層を差し込めるよう、値には余裕を持たせる。
+     */
+    --z-header: 100;
+  }
+}

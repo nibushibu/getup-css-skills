@@ -1,0 +1,34 @@
+/*
+ * スタイルシートのエントリーポイント（ひな形）。
+ *
+ * ## 優先順の決め方
+ *
+ * 詳細度の高さではなく、「カスケードレイヤーの順序」と「記述順」で優先順を決める。
+ * セレクタは [0,1,0]（クラス 1 つ）を基本に揃え、`!important` は使わない。
+ * レイヤーは後に宣言したものほど強い。同じレイヤーの中で詳細度が同じなら、
+ * 後に書いたものが勝つ。
+ *
+ * ## クラス名の接頭辞
+ *
+ *   layout     → .l-
+ *   components → .c-
+ *   utilities  → .u-
+ *
+ * reset / tokens / base ではクラスを定義しない。
+ *
+ * ## ファイルの分け方
+ *
+ * 下の `@import` の並び順が、そのまま記述順になる。1 レイヤー 1 ファイルにしているが、
+ * 1 つのファイルにまとめても、components を複数のファイルに分けてもよい。
+ * その場合も、ここの並び順で記述順を管理する。
+ *
+ * reset.css / base.css / components.css / utilities.css は、プロジェクトで用意する。
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+@import "./reset.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./layout.css";
+@import "./components.css";
+@import "./utilities.css";
