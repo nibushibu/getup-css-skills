@@ -50,7 +50,7 @@ export default {
     /*
      * カスタムプロパティ名の規約。
      *   --space, --color-foreground : トークン（tokens.css にだけ置く）
-     *   --_min, --_heading-size     : その部品の中だけで使う調整用の値
+     *   --_grid-min, --_heading-size : その部品の中だけで使う調整用の値（名前に block 名を含める）
      * stylelint-config-standard の既定（kebab-case）を、先頭の `_` を許す形に広げている。
      */
     "custom-property-pattern": [

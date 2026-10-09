@@ -6,19 +6,20 @@
  * - メディアクエリを使わず、中身の幅で並びが変わるように作る。
  * - 自分の外側の margin は持たない（中央寄せの `auto` は例外）。
  *   外側の間隔は、親の `gap` か、置かれた先の部品の `__要素` クラスで決まる。
- * - 調整値は `--_` 変数で持ち、modifier ではその値だけを差し替える。
+ * - 調整値は `--_` 変数で持ち（名前に block 名を含める。`--_grid-min`）、
+ *   modifier ではその値だけを差し替える。
  *   その場所だけの調整は、親の部品の `__要素` クラスを mix して、プロパティを直接書く。
  * - `<ul>` / `<ol>` にも付けられるものは、記号と字下げをここで消す。
  */
 @layer layout {
   /* 中央寄せの入れ物 */
   .l-container {
-    --_max-inline-size: 72rem;
-    --_padding-inline: var(--space);
+    --_container-max-inline-size: 72rem;
+    --_container-padding-inline: var(--space);
 
-    max-inline-size: var(--_max-inline-size);
+    max-inline-size: var(--_container-max-inline-size);
     margin-inline: auto;
-    padding-inline: var(--_padding-inline);
+    padding-inline: var(--_container-padding-inline);
   }
 
   /*
@@ -27,20 +28,20 @@
    * これではなく、`__要素` の `margin-block-start` で組む部品にする。
    */
   .l-stack {
-    --_gap: var(--space);
+    --_stack-gap: var(--space);
 
     display: grid;
-    gap: var(--_gap);
+    gap: var(--_stack-gap);
     align-content: start;
   }
 
   /* 子を横に並べ、入りきらなければ折り返す（タグやリンクの並びなど） */
   .l-cluster {
-    --_gap: calc(var(--space) * 0.5);
+    --_cluster-gap: calc(var(--space) * 0.5);
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--_gap);
+    gap: var(--_cluster-gap);
     align-items: center;
     padding-inline-start: 0;
     list-style: none;
@@ -53,26 +54,26 @@
 
   /*
    * 同じ幅の子（カードなど）を格子状に並べる。
-   * 列数は決めず、1 列の最小幅（`--_min`）だけを決める。
+   * 列数は決めず、1 列の最小幅（`--_grid-min`）だけを決める。
    * 入るだけの列が自動で作られるので、画面幅に応じて列数が変わる。
    */
   .l-grid {
-    --_min: 16rem;
-    --_gap: var(--space);
+    --_grid-min: 16rem;
+    --_grid-gap: var(--space);
 
     display: grid;
     grid-template-columns: repeat(
       auto-fill,
-      minmax(min(var(--_min), 100%), 1fr)
+      minmax(min(var(--_grid-min), 100%), 1fr)
     );
-    gap: var(--_gap);
+    gap: var(--_grid-gap);
     padding-inline-start: 0;
     list-style: none;
   }
 
   /* 小さいものを多く並べる */
   .l-grid--narrow {
-    --_min: 9rem;
+    --_grid-min: 9rem;
   }
 
   /*
@@ -81,12 +82,12 @@
    * 広い側が横幅の半分を下回ると折り返す。
    */
   .l-split {
-    --_gap: calc(var(--space) * 2);
+    --_split-gap: calc(var(--space) * 2);
     --_split-side-size: 20rem;
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--_gap);
+    gap: var(--_split-gap);
     align-items: start;
   }
 
