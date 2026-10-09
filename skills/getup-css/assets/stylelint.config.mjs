@@ -49,7 +49,8 @@ export default {
 
     /*
      * カスタムプロパティ名の規約。
-     *   --space, --color-foreground : トークン（tokens.css にだけ置く）
+     *   --space, --color-foreground : トークン（分類の名前で始める。tokens.css にだけ置く）
+     *   --nav-inset                  : 部品の引数（block 名で始める。親が渡す。:root には置かない）
      *   --_grid-min, --_heading-size : その部品の中だけで使う調整用の値（名前に block 名を含める）
      * stylelint-config-standard の既定（kebab-case）を、先頭の `_` を許す形に広げている。
      */

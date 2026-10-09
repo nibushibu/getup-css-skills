@@ -1,6 +1,6 @@
 ---
 name: getup-css
-description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables; spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
+description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables and component parameters (unprefixed custom properties a parent passes in); spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
 license: MIT
 ---
 
@@ -182,7 +182,7 @@ license: MIT
 - 相対色構文で有彩色の明度（`l`）を大きく動かすと、色域の外に出て、ブラウザによって見た目が変わることがある。その場合は `color-mix()` と組み合わせる。
 - ブレークポイントはトークンにできない。`@media` の条件には `var()` を書けず、`@custom-media` もまだ実装されていないため。数値は直接書き、使っている値と場所を設計書の一覧表で管理する。
 
-## 6. ローカル変数（`--_`）
+## 6. ローカル変数（`--_`）と引数
 
 - ある部品の中だけで使う調整用の値は、トークンと区別して `--_` で始め、名前に block 名を含める（`--_grid-min`、`--_stack-gap`、`--_heading-size`）。ほかのファイルや部品からも使いたくなったら、トークンに昇格させる。
   - block 名には、接頭辞（`l-`、`c-`）を付けない。
@@ -222,6 +222,35 @@ license: MIT
     gap: calc(var(--space) * 2);
   }
   ```
+
+- 直接書くだけでは足りないときは、部品が引数を用意する。引数は、ほかの部品から値を受け取るための変数で、`_` を付けず、block 名で始める（`--nav-inset`）。部品の中の複数の要素が、外から渡された同じ値を使うときに使う。親が部品の中の要素を指すセレクタを書かずに済む。
+
+  ```css
+  /* 部品の側：引数を内部の値で受け、既定値を 1 か所に書く */
+  .c-nav {
+    --_nav-inset: var(--nav-inset, 0);
+  }
+
+  .c-nav__item {
+    padding-inline-start: var(--_nav-inset);
+  }
+
+  /* 親の側：部品の先頭の要素に `__要素` を mix して、引数を渡す */
+  .c-site-header__nav {
+    --nav-inset: var(--space);
+  }
+  ```
+
+  ```html
+  <nav class="c-nav c-site-header__nav">…</nav>
+  ```
+
+  引数の約束：
+  - 部品の側では、引数を直接読まず、内部の値（`--_` 変数）で受ける。既定値は、そこで `var()` の第 2 引数として 1 か所にだけ書く。
+  - 引数そのものは、部品の側で定義しない。定義すると、親が渡した値を上書きしてしまう。名前の違う内部の値で受ければ、親が祖先で渡しても、同じ要素（mix）で渡しても、記述順に関係なく親の値が届く。
+  - 親は、部品の先頭の要素（mix）か、その祖先で渡す。部品の内側の要素で渡しても、先頭の要素で計算された内部の値には届かない。
+  - 引数もトークンも `_` が付かないので、名前の始まりで見分ける。トークンは分類の名前（`--color-`、`--space` など）で始まり、トークンのファイルにだけ置く。引数は block 名で始まり、`:root` やトークンのファイルには置かない。
+  - 考え方は、Lea Verou の pseudo-private の変数と、Open Props（`--_` を内部の値に使う）にならっている。`--_` の名前に block 名を含める点だけが違う。
 
 ## 7. 素の要素と組版
 
