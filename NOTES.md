@@ -62,48 +62,6 @@ Skill としては配布しない（`npx skills add` で入るのは `skills/get
 - `--_` 変数で受ける今の形なら、`@property` を使わずに既定値を 1 か所にまとめられる
 - `@property` 自体を使うことを禁じるわけではない
 
-## 状態を表す属性と、JS の役割（未決）
-
-**何が決まっていないか**
-
-開閉や表示の状態を、どう CSS に伝えるか。どのプロジェクトでも同じ考え方で書けるので、
-ルールにするかどうかを決める。
-
-**これまでの考え**
-
-- JS は属性を書き換えるだけにし、見た目は CSS が属性を見て決める。
-  クラスの付け外しで状態を持つと、属性とクラスで状態が二重になる
-  - 意味のある属性があればそれを使う（`aria-expanded`、`aria-current` など）
-  - なければ `data-*` を使う（画面に入ったかどうかの `data-in-view` など）
-- 条件は `:where()` に入れ、詳細度を [0,1,0] に保つ（1 節）
-
-  ```css
-  :where(.c-menu-toggle[aria-expanded="false"]) + .c-menu {
-    display: none;
-  }
-  ```
-
-- JS が動いて初めて元に戻る見た目（画面に入るまで隠すなど）は、見えている状態を既定にし、
-  隠す指定を `@media (scripting: enabled)` で囲む。JS が動かない環境で中身が消えないようにする
-- 動きは `@media (prefers-reduced-motion: no-preference)` の中にだけ書く
-
-  ```css
-  .c-feature__image {
-    transition:
-      opacity 0.6s,
-      translate 0.6s;
-  }
-
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    :where([data-in-view="false"]) .c-feature__image {
-      opacity: 0;
-      translate: 0 1rem;
-    }
-  }
-  ```
-
-- 7 節（素の要素と組版）の hover の扱いと並べて、新しい節にするかどうかも決めていない
-
 ## ルールの変更を、使っているプロジェクトにどう伝えるか（未決）
 
 **何が決まっていないか**

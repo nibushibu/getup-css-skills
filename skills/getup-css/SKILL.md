@@ -1,6 +1,6 @@
 ---
 name: getup-css
-description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables and component parameters (unprefixed custom properties a parent passes in); spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
+description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables and component parameters (unprefixed custom properties a parent passes in); state via attributes (aria-*/data-*) instead of classes; spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
 license: MIT
 ---
 
@@ -15,7 +15,7 @@ license: MIT
 - CSS を書く・直す前に、このファイルを読む。
 - プロジェクトの設計書（`AGENTS.md` など）や、プロジェクト固有の別の Skill とこの Skill が食い違う場合は、プロジェクト側の記述を優先する。食い違いに気づいたら、そのことを伝える。
 - 新しいプロジェクトでスタイルの土台を作るときは、`assets/` のひな形を使う（「assets」の節を参照）。
-- 1〜9 節は原則で、どのプロジェクトでも守る。「好み」の節は作者の流儀なので、プロジェクトに別の指示があればそちらに従う。
+- 1〜10 節は原則で、どのプロジェクトでも守る。「好み」の節は作者の流儀なので、プロジェクトに別の指示があればそちらに従う。
 
 ## 1. 優先順と詳細度
 
@@ -289,12 +289,45 @@ license: MIT
   - 「クラスの有無で見た目が変わる」ような、暗黙のルールは作らない。思い出しにくいため。
   - リンクの下線と同じく、「既定を残し、不要な部品の側で消す」という考え方。
 - 論理プロパティ（`margin-block-start`、`inline-size` など）を原則として使う。物理プロパティ（`margin-top`、`width` など）は、意図がある場合だけ使う。
-- hover の表現は、hover できる環境だけに限る（`@media (hover: hover)`）。タッチ端末では、別の手段で操作できるようにする。
 - 言語ごとの組版（行間、`line-break`、`hyphens` など）は、`lang` 属性を起点に CSS で切り替える。部品のロジック（`locale === "ja" ? … : …`）に持ち込まない。
   - `:lang()` ではなく、`:where([lang|="ja"])` で書き、子へは継承で届ける。
   - `:lang()` は子孫のすべてに直接当たるので、親で値を変えても、子には継承されなくなる。
 
-## 8. ブラウザサポート
+## 8. 状態と動き
+
+- 開閉・選択・表示などの状態は、属性で表す。JS は属性を書き換えるだけにし、見た目は CSS が属性を見て決める。
+  - 状態を表すクラス（`.is-open` など）は使わない。属性とクラスの両方で状態を持つと、ずれることがあるため。
+  - 意味のある属性があれば、それを使う（`aria-expanded`、`aria-current`、`aria-selected`、`hidden`、`open` など）。支援技術にも同じ状態が伝わる。
+  - 該当する属性がなければ、`data-*` 属性を使う。値は `aria-*` と同じく `"true"` / `"false"` の文字列にする。`"false"` で「JS が管理していて、まだその状態ではない」ことを表せる。
+- 状態の条件は `:where()` に入れ、詳細度を保つ（1 節）。
+
+  ```css
+  :where(.c-menu-toggle[aria-expanded="false"]) + .c-menu {
+    display: none;
+  }
+  ```
+
+- JS が動いて初めて元に戻る見た目（画面に入るまで隠すなど）は、見えている状態を既定にする。隠す指定は `@media (scripting: enabled)` で囲み、JS が動かない環境で中身が消えないようにする。
+- 画面に入ったときの出現や視差のような、装飾のための大きな動きは、`@media (prefers-reduced-motion: no-preference)` の中にだけ書く。動きを減らす設定の環境では、動かさずに最終の状態を見せる。開閉の矢印の回転のような、操作に応じた小さな変化までは対象にしない。
+
+  ```css
+  .c-feature__image {
+    transition:
+      opacity 0.6s,
+      translate 0.6s;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    :where([data-in-view="false"]) .c-feature__image {
+      opacity: 0;
+      translate: 0 1rem;
+    }
+  }
+  ```
+
+- hover の表現は、hover できる環境だけに限る（`@media (hover: hover)`）。タッチ端末では、別の手段で操作できるようにする。
+
+## 9. ブラウザサポート
 
 Baseline の状況は時期によって変わる。判断するときは、その時点の状況を確かめる。
 
@@ -302,7 +335,7 @@ Baseline の状況は時期によって変わる。判断するときは、そ�
 - Newly available の機能は、公開時期と照らして、使うかどうかを個別に判断する（例：相対色構文）。使うと決めたら、理由と時期を設計書に残す。
 - `var()` を含む宣言は、読み込み時の構文チェックを通ってしまう。そのため、「同じプロパティを 2 回書く」フォールバックは効かない。フォールバックが必要なら、`@supports` で囲む。
 
-## 9. 作業環境
+## 10. 作業環境
 
 - スタイルガイドのページを、作業場として置く。
   - トークンの一覧は、CSS のファイルから自動で抽出する。手で書き写すと、実物とずれていくため。
@@ -352,4 +385,5 @@ Baseline の状況は時期によって変わる。判断するときは、そ�
 - 1 つの入れ物の中で、`gap` と子の `margin` を混ぜていないか。
 - 派生値をトークンにしていないか。
 - 物理プロパティを、意図なく使っていないか。
+- 状態をクラスで持っていないか。JS が動かないと見えなくなる指定を、`scripting` で囲んだか。
 - Stylelint が通るか。
