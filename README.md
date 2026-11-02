@@ -14,8 +14,9 @@ AI エージェント（Zed、Claude Code など）に、プロジェクトを�
 ```
 skills/
 └── getup-css/
-    ├── SKILL.md    ← ルールの本体（エージェントが読む）
-    └── assets/     ← 新しいプロジェクトで使うひな形
+    ├── SKILL.md      ← ルールの本体（エージェントが読む）
+    ├── CHANGELOG.md  ← ルールの変更と、使っている側で直すこと
+    └── assets/       ← 新しいプロジェクトで使うひな形
         ├── stylelint.config.mjs
         ├── global.css
         ├── tokens.css
@@ -35,6 +36,7 @@ npx skills add nibushibu/getup-css-skills --skill getup-css -a zed -a claude-cod
 - 実体は `.agents/skills/getup-css/` に置かれ、`.claude/skills/getup-css` はそこへの相対パスのシンボリックリンクになる。
 - インストールした内容と取得元は `skills-lock.json` に記録される。これもコミットしておく。
 - 更新は `npx skills update getup-css`、削除は `npx skills remove getup-css`。
+  更新したら、`CHANGELOG.md` の追加分を読み、「使っている側で直すこと」に従う。
 - インストールしたファイルはプロジェクトにコミットする。ほかの人や別のマシンでも同じルールが効く。
 
 全プロジェクトで使いたい場合は、`-g` を付けてユーザー単位でインストールする。
@@ -54,3 +56,5 @@ npx skills add nibushibu/getup-css-skills --skill getup-css -a zed -a claude-cod
 ## 書き換えるとき
 
 `SKILL.md` の「好み」の節は、作者の流儀をまとめたもの。ほかの人が使う場合は、まずこの節を書き換える。
+
+ルールを変えたときは、同じコミットで `CHANGELOG.md` に 1 件足す。使っている側で直すことがなければ、「なし」と書く。
