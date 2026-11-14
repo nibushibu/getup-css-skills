@@ -25,6 +25,7 @@ license: MIT
   - その要素自身の状態を重ねたときに限り、[0,2,0] まで許す。状態は、操作に応じた疑似クラス（`:hover`、`:focus-visible`、`:active` など）、フォームの状態（`:checked` など）、自分の状態を表す属性（`aria-*`、`data-*`、`open`）を指す（8 節）。
   - 状態を詳細度で上げるのは、状態が通常の見た目と、親からの mix（2 節）の両方に、記述順に関係なく勝つようにするため。mix する親のルールは後ろに書かれるので、記述順だけでは「状態が勝つ」ことを保証できない。
   - ほかの要素の状態や文脈（親・兄弟）、構造の疑似クラス（`:first-child`、`:not()`、`:has()` など）は状態に含めない。`:where()` に入れる。
+  - 例外として、流れの先頭の余白の打ち消し（`.c-article > :first-child`）は、`:where()` に入れずに [0,2,0] で書く（4 節）。
   - 疑似要素（`::before` など）で増える分（[0,0,1]）は数えない。
 - 次は使わない。
   - `!important`
@@ -135,8 +136,8 @@ license: MIT
   - 例外は 2 つ。位置合わせのための `auto`（`margin-inline: auto`、`margin-block-start: auto`）と、utilities の技術的な指定（視覚的に隠すための `margin: -1px` など）。
 - 文脈の余白は、前側（`margin-block-start` / `margin-inline-start`）にだけ付ける。上から下へ流れるなら上、左から右へ流れるなら左。後ろ側には付けない。
 - 流れの先頭の要素の余白は、入れ物の側で消す。
-  - 打ち消しは同じ詳細度なので、その block の定義の最後に書き、記述順で勝たせる。
-  - そのために、余白を持つ側の詳細度も [0,1,0] に保つ。
+  - 打ち消しは `:where()` に入れず、`.c-article > :first-child`（[0,2,0]）で書く。詳細度で `__要素` の余白（[0,1,0]）に勝つので、記述順に関係なく、block の定義の中にまとめて書ける。
+  - 余白を持つ側は [0,1,0] のままにする。状態を重ねて [0,2,0] にした余白は、記述順によっては打ち消しに勝ってしまう。
 
 ```html
 <div class="c-article">
@@ -148,6 +149,13 @@ license: MIT
 ```
 
 ```css
+.c-article {
+  /* 流れの先頭には余白を付けない（詳細度で勝つので、block の定義の中に書いてよい） */
+  > :first-child {
+    margin-block-start: 0;
+  }
+}
+
 .c-article__heading {
   margin-block-start: calc(var(--space) * 2);
 }
@@ -158,11 +166,6 @@ license: MIT
 
 .c-article__more {
   margin-block-start: calc(var(--space) * 1.5);
-}
-
-/* 流れの先頭には余白を付けない（最後に書いて、記述順で勝たせる） */
-.c-article > :where(:first-child) {
-  margin-block-start: 0;
 }
 ```
 
@@ -191,7 +194,7 @@ license: MIT
   }
   ```
 
-- ブロック方向の先頭（`margin-block-start`）へのはみ出しは、流れの先頭の打ち消しとぶつかり、記述順で打ち消しに負ける。先頭の要素を親の上端まで広げたいときは、親の `padding-block-start` を 0 にするなど、ほかの方法をとる。
+- ブロック方向の先頭（`margin-block-start`）へのはみ出しは、流れの先頭の打ち消しとぶつかり、詳細度で打ち消しに負ける。先頭の要素を親の上端まで広げたいときは、親の `padding-block-start` を 0 にするなど、ほかの方法をとる。
 
 ## 5. デザイントークン
 
@@ -246,7 +249,7 @@ license: MIT
   - 別の部品からは読まない。
   - 既定値は必ず block 側で定義する。
 
-- block 自身の modifier では、宣言を書き直さず、`--_` 変数の値を差し替える（`.l-grid--narrow { --_grid-min: 9rem; }`）。先頭の打ち消しのように、宣言の順序に頼る指定を崩さないため。
+- block 自身の modifier では、宣言を書き直さず、`--_` 変数の値を差し替える（`.l-grid--narrow { --_grid-min: 9rem; }`）。block の定義の中で、記述順に頼っている指定を崩さないため。
 - ほかの部品から調整するときは、相手の `--_` 変数には触らない。`__要素` クラスを mix してプロパティを直接書き、後ろのレイヤーか、後ろの記述順で勝たせる。
 
   ```html
@@ -313,7 +316,7 @@ license: MIT
     margin-block-start: var(--_prose-space-heading);
   }
 
-  .c-prose > :where(:first-child) {
+  .c-prose > :first-child {
     margin-block-start: 0;
   }
   ```
@@ -419,7 +422,7 @@ Baseline の状況は時期によって変わる。判断するときは、そ�
 - 詳細度が [0,1,0]（その要素自身の状態を重ねた場合は [0,2,0]）を超えていないか。
 - block や layout のクラスに、`margin`（`auto` 以外）を書いていないか。
 - `reset` / `base` で、素の要素に `margin` を付けていないか。
-- 文脈の余白を、後ろ側に付けていないか。先頭の打ち消しを、block の定義の最後に書いたか。
+- 文脈の余白を、後ろ側に付けていないか。先頭の打ち消しを、`:where()` に入れずに `> :first-child` で書いたか。
 - 1 つの入れ物の中で、`gap` と子の `margin` を混ぜていないか。
 - 派生値をトークンにしていないか。
 - 物理プロパティを、意図なく使っていないか。
