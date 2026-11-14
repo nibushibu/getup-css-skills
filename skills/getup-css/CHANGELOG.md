@@ -3,6 +3,21 @@
 ルールの変更を、新しい順に書く。取り込んだ側は、前回の取り込み以降の項目を読み、
 「使っている側で直すこと」に従って手元の CSS や設計書を直す。
 
+## 2026-11-14
+
+**変更**
+
+- ひな形の `stylelint.config.mjs` を Stylelint 18（`stylelint-config-standard` 41）に合わせた。
+  18 で `selector-max-specificity` の `ignoreSelectors` がなくなったため、詳細度の上限を
+  `"0,2,0"` に戻した。状態を重ねた [0,2,0] と組み合わせの [0,2,0] は検査では区別できないので、
+  書く側が守る（1 節に書いた）
+
+**使っている側で直すこと**
+
+- `stylelint` を 18 以上に、`stylelint-config-standard` を 41 以上に上げる。Node.js は 22.22.2 / 24.15.0 以上が要る
+- `stylelint.config.mjs` の `selector-max-specificity` を、ひな形と同じ `"0,2,0"` に差し替える
+- そのほかの 18 での変更は、Stylelint の移行ガイド（`docs/migration-guide/to-18.md`）で確かめる
+
 ## 2026-11-02
 
 **変更**

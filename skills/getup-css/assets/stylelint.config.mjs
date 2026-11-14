@@ -4,7 +4,7 @@
  * 「詳細度を低く揃え、カスケードレイヤーと記述順で優先順を管理する」という前提は、
  * 規律で守るものだが、破られたことに気づけるよう、機械的に検査できるものはここで縛る。
  *
- * 必要なパッケージ：stylelint、stylelint-config-standard
+ * 必要なパッケージ：stylelint（18 以上）、stylelint-config-standard（41 以上）
  *
  * @type {import("stylelint").Config}
  */
@@ -14,31 +14,16 @@ export default {
     /*
      * 詳細度の上限。
      *
-     * 上限は [0,1,0]（クラス 1 つ）。その要素自身の状態（`:hover` や `[aria-expanded]` など）と
-     * 疑似要素だけは数えない。状態を重ねた [0,2,0] は許し、`.c-a .c-b` のような
-     * 組み合わせの [0,2,0] は弾くため。状態の疑似クラスが足りなければ、ここに足す。
+     * 基本は [0,1,0]（クラス 1 つ）。その要素自身の状態（`:hover` や `[aria-expanded]` など）を
+     * 重ねると [0,2,0] になるので、そこまでを許す。
+     * Stylelint では、状態を重ねた [0,2,0] と、`.c-a .c-b` のような組み合わせの [0,2,0] を
+     * 区別できない（18 で `ignoreSelectors` がなくなった）。組み合わせを書かないことは、書く側が守る。
      * 超えそうな場合は、詳細度を上げるのではなく、次のどれかで解決する。
      *   - 条件を `:where()` に入れる
      *   - 対象の要素にクラスを与える
      *   - 後ろのレイヤーへ移す
      */
-    "selector-max-specificity": [
-      "0,1,0",
-      {
-        ignoreSelectors: [
-          ":hover",
-          ":focus",
-          ":focus-visible",
-          ":focus-within",
-          ":active",
-          ":checked",
-          "/^\\[aria-/",
-          "/^\\[data-/",
-          "/^\\[open/",
-          "/^::/",
-        ],
-      },
-    ],
+    "selector-max-specificity": "0,2,0",
 
     // ID セレクタは詳細度が跳ね上がり、順序による管理が破綻するため使わない
     "selector-max-id": 0,
