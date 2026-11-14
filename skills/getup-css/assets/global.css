@@ -23,6 +23,7 @@
  * その場合も、ここの並び順で記述順を管理する。
  *
  * reset.css / base.css / components.css / utilities.css は、プロジェクトで用意する。
+ * reset.css では、ブラウザが既定で付ける `margin` を 0 にする（SKILL.md 2 節）。
  */
 @layer reset, tokens, base, layout, components, utilities;
 
