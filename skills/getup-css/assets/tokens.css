@@ -26,6 +26,12 @@
  */
 @layer tokens {
   :root {
+    /*
+     * ブラウザが描く部分（スクロールバー、フォーム部品など）の明暗。
+     * ダークモードに対応するなら `light dark` にする。HTML の `<head>` にも
+     * `<meta name="color-scheme" content="light dark">` を書くと、CSS が届く前の
+     * 背景も暗くなり、読み込みの一瞬に白く光らない。
+     */
     color-scheme: light;
 
     /* 色：基準色 */

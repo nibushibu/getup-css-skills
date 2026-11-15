@@ -3,6 +3,17 @@
 ルールの変更を、新しい順に書く。取り込んだ側は、前回の取り込み以降の項目を読み、
 「使っている側で直すこと」に従って手元の CSS や設計書を直す。
 
+## 2026-11-15（4）
+
+**変更**
+
+- ひな形の `tokens.css` の `color-scheme` に、ダークモードに対応するときの書き方（`light dark` と、HTML の `<meta name="color-scheme">`）をコメントで足した
+
+**使っている側で直すこと**
+
+- ダークモードに対応しているのに `color-scheme` が `light` のまま（または未指定）なら、`light dark` にする。
+  HTML の `<head>` にも `<meta name="color-scheme" content="light dark">` を足す
+
 ## 2026-11-15（3）
 
 **変更**
