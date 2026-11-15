@@ -41,6 +41,16 @@ npx skills add nibushibu/getup-css-skills --skill getup-css -a zed -a claude-cod
 
 全プロジェクトで使いたい場合は、`-g` を付けてユーザー単位でインストールする。
 
+### 併用を勧める Skill
+
+Chrome チームの [modern-web-guidance](https://developer.chrome.com/docs/modern-web-guidance) を、ユーザー単位（`-g`）でインストールしておくことを勧める。
+新しい CSS の機能の選び方と Baseline の状況は modern-web-guidance で確かめ、書き方は `getup-css` に従う。
+入っていなくても `getup-css` は使える。
+
+```sh
+npx skills add GoogleChrome/modern-web-guidance -g -a zed -a claude-code -y
+```
+
 `SKILL.md` の形式に対応していないツールでは、プロジェクトの `AGENTS.md` などから `SKILL.md` を読むよう指示する。
 
 ## 使い方
