@@ -4,12 +4,21 @@
  * 「詳細度を低く揃え、カスケードレイヤーと記述順で優先順を管理する」という前提は、
  * 規律で守るものだが、破られたことに気づけるよう、機械的に検査できるものはここで縛る。
  *
+ * この設定は方針（Agent Skill `getup-css` の SKILL.md）を確かめる補助で、方針そのものではない。
+ * 検査で区別できないものは書く側が守る。検査が方針より厳しく、方針どおりのセレクタが
+ * エラーになるときは、理由を書いた無効化コメントで通す。CSS のコメントに、
+ * `stylelint-disable-next-line <ルール名> -- <理由>` と書く。
+ *
  * 必要なパッケージ：stylelint（18 以上）、stylelint-config-standard（41 以上）
  *
  * @type {import("stylelint").Config}
  */
 export default {
   extends: ["stylelint-config-standard"],
+
+  // 無効化コメントには理由（`-- 理由`）を必ず書く
+  reportDescriptionlessDisables: true,
+
   rules: {
     /*
      * 詳細度の上限。
@@ -31,7 +40,11 @@ export default {
     // ID セレクタは詳細度が跳ね上がり、順序による管理が破綻するため使わない
     "selector-max-id": 0,
 
-    // `div.c-foo` のような型修飾。詳細度を無駄に上げるうえ、要素を固定してしまう
+    /*
+     * `div.c-foo` のような型修飾。詳細度を無駄に上げるうえ、要素を固定してしまう。
+     * `:where()` の中の型（`.c-foo:where(ul)`）も検査されるが、こちらは詳細度に数えないので、
+     * 要素を固定してよい理由があれば、無効化コメントで通す。
+     */
     "selector-no-qualifying-type": true,
 
     // 優先順はレイヤーと記述順で決める。`!important` はその仕組みを迂回する
