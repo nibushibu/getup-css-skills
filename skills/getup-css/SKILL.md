@@ -1,6 +1,6 @@
 ---
 name: getup-css
-description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables and component parameters (unprefixed custom properties a parent passes in); state via attributes (aria-*/data-*) instead of classes; spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
+description: Plain-CSS architecture rules. Manage priority with cascade layers (@layer) and source order instead of specificity; keep selectors at [0,1,0]; layer-prefixed class names (l-/c-/u-) with BEM-style elements and modifiers; design tokens as custom properties with derived values via calc() and relative color syntax; local --_ variables and component parameters (unprefixed custom properties a parent passes in); state via attributes (aria-*/data-*) instead of classes; components take their size from their content or the parent layout instead of fixed widths; spacing split into placement (parent gap) and context (margin-block-start on elements). Use when writing, reviewing, or refactoring CSS, setting up stylesheets or Stylelint, or designing components and tokens. CSS を書く・レビューする・リファクタリングするとき、@layer・詳細度・トークン（CSS 変数）・余白・コンポーネントのクラス設計を扱うときに使う。
 license: MIT
 ---
 
@@ -136,6 +136,16 @@ license: MIT
   - 置かれた先の親が、`__要素` クラスで与える（BEM の mix）。親の側の `> *` で、子に一律に与えてもよい（`assets/layout.css` の `.l-split`）。
   - 同じ部品でも、置かれる親によって伸び方や位置が変わるため。外側の `margin` の決まり（4 節）は、この一部。
   - 例外は、4 節と同じく、位置合わせのための `margin` の `auto`。
+- block は、自分の大きさ（幅と高さ）を固定の値で持たない。大きさは、中身の大きさか、親の並べ方で決まるようにする。
+  - 置かれ方と同じく、置かれた先によって使える幅が変わるため。固定の幅を持つ部品は、置ける場所が限られる。
+  - その場所での幅（固定の幅、上限、下限）は、置かれた先の親が `__要素` クラスで与える。同じ幅の決め方を繰り返し使うなら、layout にする（`assets/layout.css` の `.l-container` の最大幅、`.l-split__side` の基準の幅）。
+  - block の中の `__要素` の幅は、block が自分の中の並べ方として決めてよい。block は、その要素の親にあたるため。
+  - 文章の行の長さ（読みやすさのための `max-inline-size`）も、親が与える。隣に何かが並ぶ場所では邪魔になり、ページの幅いっぱいの列では必要になるなど、置かれた先で要否が変わるため。
+  - block が自分で持ってよいのは、次の値だけ。
+    - 中身に比例する値：アイコンの `1em`、`aspect-ratio` など。
+    - 下限：押しやすさのための最小の大きさ、flex や grid の子を縮められるようにする `min-inline-size: 0` など。縮めると壊れる限界を書くだけで、伸び方は縛らない。
+    - 親の並びの外に出る部品の幅：ダイアログやポップオーバーなど、幅を決める親がないもの。`min(100% - 余白, 40rem)` のように、画面に収まる形で書く。
+    - 中身の大きさを持たない飾りの大きさ：中が空の丸など、大きさがそのまま見た目になるもの。`em` か、トークンからの派生で書く。
 - スタイルは少なく、具体的すぎない指定にする。共通のスタイルにまとめられるものは、まとめる。
 
 ## 4. 余白
@@ -537,6 +547,7 @@ Baseline の状況は時期によって変わる。判断するときは、そ�
 
 - 詳細度が [0,1,0]（その要素自身の状態を重ねた場合と、先頭の打ち消しは [0,2,0]。疑似要素の分は数えない）を超えていないか。状態を 2 つ以上重ねたとき、2 つ目からを `:where()` に入れたか。
 - block や layout のクラスに、`margin`（`auto` 以外）や、ほかの置かれ方（`align-self`、`flex` など）を書いていないか。
+- block に、自分の大きさを固定の値で書いていないか（中身に比例する値、下限、並びの外に出る部品、飾りを除く）。文章の行の長さを、block の側で縛っていないか。
 - layout の名前で、中身のことを言っていないか。layout に切り出したのは、同じ並べ方が違う中身で出てきたからか。
 - `reset` / `base` で、素の要素に `margin` を付けていないか。
 - 文脈の余白を、後ろ側に付けていないか。先頭の打ち消しを、`:where()` に入れずに `> :first-child` で書いたか（`.c-prose` の入れ物の中を除く）。
