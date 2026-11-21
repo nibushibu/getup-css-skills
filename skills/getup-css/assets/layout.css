@@ -32,6 +32,9 @@
     --_stack-gap: var(--space);
 
     display: grid;
+
+    /* 列の幅を入れ物に合わせる。既定の `auto` だと、子の最小幅（長い語など）で列が押し広げられる */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--_stack-gap);
     align-content: start;
   }
@@ -110,9 +113,10 @@
   /*
    * 狭い側を中身の幅にする（短い見出しやボタンなど）。
    * 狭い側の基準の幅がなくなるので、縦に積むかどうかは、広い側の下限で決める。
+   * 下限は、広い側の文字の大きさに比例させる（和文の 1 行が 32 字を下回るほど細くなるなら積む）。
    */
   .l-split--fit {
     --_split-side-size: auto;
-    --_split-main-min: max(50%, 20rem);
+    --_split-main-min: max(50%, 32em);
   }
 }
