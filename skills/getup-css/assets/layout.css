@@ -80,11 +80,12 @@
   /*
    * 幅の違う 2 つ（写真と本文など）を横に並べ、幅が足りなければ縦に積む。
    * 狭い側に `.l-split__side` を付ける（順番はどちらでもよい）。
-   * 広い側が横幅の半分を下回ると折り返す。
+   * 広い側が下限（既定は横幅の半分）を下回ると折り返す。
    */
   .l-split {
     --_split-gap: calc(var(--space) * 2);
     --_split-side-size: 20rem;
+    --_split-main-min: 50%;
 
     display: flex;
     flex-wrap: wrap;
@@ -92,13 +93,26 @@
     align-items: start;
   }
 
+  /*
+   * 余った幅は 999 : 1 で分ける。横に並ぶときは余りのほぼすべてを広い側が受け取り、
+   * 縦に積むときは、どちらも横幅いっぱいに伸びる（Every Layout の Sidebar と同じ）。
+   */
   :where(.l-split) > * {
     flex: 999 1 0;
-    min-inline-size: 50%;
+    min-inline-size: var(--_split-main-min);
   }
 
   .l-split__side {
     flex: 1 1 var(--_split-side-size);
     min-inline-size: 0;
+  }
+
+  /*
+   * 狭い側を中身の幅にする（短い見出しやボタンなど）。
+   * 狭い側の基準の幅がなくなるので、縦に積むかどうかは、広い側の下限で決める。
+   */
+  .l-split--fit {
+    --_split-side-size: auto;
+    --_split-main-min: max(50%, 20rem);
   }
 }
