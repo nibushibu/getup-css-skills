@@ -22,10 +22,7 @@
      * 左右の余白は padding ではなく幅で取る。同じ要素に付けた layout（`.l-stack` など）が
      * リストの字下げを消しても（`padding-inline-start: 0`）、余白が消えないようにするため。
      */
-    inline-size: min(
-      100% - var(--_container-padding-inline) * 2,
-      var(--_container-max-inline-size)
-    );
+    inline-size: min(100% - var(--_container-padding-inline) * 2, var(--_container-max-inline-size));
     margin-inline: auto;
   }
 
@@ -74,10 +71,7 @@
     --_grid-gap: var(--space);
 
     display: grid;
-    grid-template-columns: repeat(
-      auto-fill,
-      minmax(min(var(--_grid-min), 100%), 1fr)
-    );
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--_grid-min), 100%), 1fr));
     gap: var(--_grid-gap);
     padding-inline-start: 0;
     list-style: none;
