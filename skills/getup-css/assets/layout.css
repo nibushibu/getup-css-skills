@@ -18,9 +18,15 @@
     --_container-max-inline-size: 72rem;
     --_container-padding-inline: var(--space);
 
-    max-inline-size: var(--_container-max-inline-size);
+    /*
+     * 左右の余白は padding ではなく幅で取る。同じ要素に付けた layout（`.l-stack` など）が
+     * リストの字下げを消しても（`padding-inline-start: 0`）、余白が消えないようにするため。
+     */
+    inline-size: min(
+      100% - var(--_container-padding-inline) * 2,
+      var(--_container-max-inline-size)
+    );
     margin-inline: auto;
-    padding-inline: var(--_container-padding-inline);
   }
 
   /*
@@ -37,6 +43,8 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--_stack-gap);
     align-content: start;
+    padding-inline-start: 0;
+    list-style: none;
   }
 
   /* 子を横に並べ、入りきらなければ折り返す（タグやリンクの並びなど） */
