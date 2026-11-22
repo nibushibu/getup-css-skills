@@ -89,6 +89,35 @@
   }
 
   /*
+   * 子をすべて横に並べ、並べた幅がしきい値を下回ったら、すべて縦に積む（Every Layout の Switcher と同じ）。
+   * `.l-grid` と違い、途中の列数（3 つのうち 2 つだけ横に並ぶなど）を通らない。
+   * 横に並べる数が決まっている所に使う（子が多いと、1 つずつが細くなる）。
+   *
+   * しきい値は、引数 `--switcher-threshold` で親が渡せる（6 節）。
+   * しきい値は子の `flex-basis` の計算の中にあり、mix でプロパティを直接書いて変えられないため。
+   */
+  .l-switcher {
+    --_switcher-threshold: var(--switcher-threshold, 40em);
+    --_switcher-gap: var(--space);
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--_switcher-gap);
+    padding-inline-start: 0;
+    list-style: none;
+  }
+
+  /*
+   * 並べた幅（100%）がしきい値より広いと、基準の幅が負になって 0 に丸められ、子は等分に横に並ぶ。
+   * 狭いと、基準の幅がとても大きくなり、子は 1 つずつ横幅いっぱいに積まれる。
+   * しきい値は `.l-switcher` の文字の大きさに比例する（40em は、和文で 40 字分）。
+   */
+  :where(.l-switcher) > * {
+    flex: 1 1 calc((var(--_switcher-threshold) - 100%) * 999);
+    min-inline-size: 0;
+  }
+
+  /*
    * 幅の違う 2 つ（写真と本文など）を横に並べ、幅が足りなければ縦に積む。
    * 狭い側に `.l-split__side` を付ける（順番はどちらでもよい）。
    * 広い側が下限（既定は横幅の半分）を下回ると折り返す。
