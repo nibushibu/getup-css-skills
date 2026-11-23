@@ -97,6 +97,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--_switcher-gap);
+
+    /*
+     * 子を行の高さに引き伸ばさない。flex の既定（`stretch`）では、比率の違う写真を並べると、
+     * 低いほうが縦に伸びてゆがむ。カードの高さを揃えたい所は、置く側の部品で `stretch` にする。
+     */
+    align-items: start;
     padding-inline-start: 0;
     list-style: none;
   }
